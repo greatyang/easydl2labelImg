@@ -14,34 +14,37 @@ import hashlib
 #name：图片文件名
 #path：lableImg工作目录
 def initxml(path,name):
-	img = cv2.imread(path+name)
-	imgheight, imgwidth,imgdepth =img.shape
-	annotation=ET.Element("annotation")
-	folder=ET.Element("folder")
-	folder.text = "folder"
-	annotation.append(folder)
-	filename=ET.Element("filename")
-	filename.text = name
-	annotation.append(filename)
-	pathe=ET.Element("path")
-	pathe.text = path+name
-	annotation.append(pathe)
-	source=ET.Element("source")
-	database=ET.SubElement(source,'database')
-	database.text = "Unknown"
-	annotation.append(source)
-	size=ET.Element("size")
-	width=ET.SubElement(size,'width')
-	width.text = "{:d}".format(imgwidth)
-	height=ET.SubElement(size,'height')
-	height.text = "{:d}".format(imgheight)
-	depth=ET.SubElement(size,'depth')
-	depth.text = "{:d}".format(imgdepth)
-	annotation.append(size)
-	segmented=ET.Element("segmented")
-	segmented.text = "0"
-	annotation.append(segmented)
-	return annotation
+	if os.path.exists(path+name):	
+		img = cv2.imread(path+name)
+		imgheight = img.shape[0]
+		imgwidth = img.shape[1]
+		imgdepth = img.shape[2]
+		annotation=ET.Element("annotation")
+		folder=ET.Element("folder")
+		folder.text = "folder"
+		annotation.append(folder)
+		filename=ET.Element("filename")
+		filename.text = name
+		annotation.append(filename)
+		pathe=ET.Element("path")
+		pathe.text = path+name
+		annotation.append(pathe)
+		source=ET.Element("source")
+		database=ET.SubElement(source,'database')
+		database.text = "Unknown"
+		annotation.append(source)
+		size=ET.Element("size")
+		width=ET.SubElement(size,'width')
+		width.text = "{:d}".format(imgwidth)
+		height=ET.SubElement(size,'height')
+		height.text = "{:d}".format(imgheight)
+		depth=ET.SubElement(size,'depth')
+		depth.text = "{:d}".format(imgdepth)
+		annotation.append(size)
+		segmented=ET.Element("segmented")
+		segmented.text = "0"
+		annotation.append(segmented)
+		return annotation
 
 #将一个标注数据加入到xml中
 #annotation:dom主体
@@ -82,7 +85,7 @@ def savexml(annotation):
 #path：lableImg工作目录
 #labels：easydl数据集中的标注数据
 def labels2xml(path,name,labels):
-	annotation=initxml(path,name)
+	annotation=initxml(path,name+".jpg")
 	for label in labels:
 		appobj(annotation,label)
 	savexml(annotation)
@@ -124,10 +127,10 @@ def getwithcookie(request_url,params,type="json"):
 #name：图片文件名
 #path：labelimg工作目录
 def downloadimage(url,path,name):
-	if not os.path.exists(path+name):
-		print("正在下载图片："+path+name)
+	if not os.path.exists(path+name+".jpg"):
+		print("正在下载图片："+path+name+".jpg")
 		content = getwithcookie(url,None,"image")
-		with open(path+name, 'wb') as f:
+		with open(path+name+".jpg", 'wb') as f:
 			f.write(content)   
 
 #获取数据集json数据
@@ -167,8 +170,9 @@ def downloaddatesetpage(dataset_id,path,annotated=0,offset=0):
 				if 'items' in data['result']:
 					size = len(data['result']['items'])
 					for object in data['result']['items']:
-						name = object['name']
-						url = object['url']
+						name = object['id']
+						url = "http:"+object['url']
+						print("name "+name+" url "+url)
 						downloadimage(url,path,name)
 						#如果是已标注的，同时生成xml文件
 						if annotated==1:
@@ -197,3 +201,4 @@ def downloaddateset(dataset_id,path):
 		print("处理完成")
 	else:
 		print("工作目录不存在，请先创建工作目录")
+
