@@ -8,7 +8,7 @@ easydl数据集导出到labelImg工具
 
 2 正常登录自己的百度账号，进入物体检测数据集页面
 
-3 使用cookie工具导出当前cookie到cookie.txt文件，格式为 Netscape HTTP Cookie File
+3 使用cookie工具（EditThisCookie）导出当前cookie到cookie.txt文件，格式为 Netscape HTTP Cookie File
 
 4 记下要导出的数据集id备用
 
