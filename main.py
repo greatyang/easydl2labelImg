@@ -8,4 +8,4 @@ args = parser.parse_args()
 if args.dataset_id is None or args.xmlpath is None:
 	print("Run \"python main.py -h\" for help")
 else:
-	easydl2labelImg.downloaddateset(args.dataset_id,args.xmlpath)
+	easydl2labelImg.downloaddateset(args.dataset_id,args.xmlpath+"\\")
